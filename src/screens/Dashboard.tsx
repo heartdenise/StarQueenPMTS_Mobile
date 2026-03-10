@@ -4,11 +4,13 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Image,
   
   StatusBar,
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '../components/Header';
 
 const Dashboard = ({ navigation, route }: any) => {
   const { plateNumber } = route?.params ?? { plateNumber: 'UNKNOWN' };
@@ -20,27 +22,7 @@ const Dashboard = ({ navigation, route }: any) => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerIcon}>
-          <Text style={styles.hamburger}>☰</Text>
-        </TouchableOpacity>
-        <View style={styles.headerRight}>
-          <TouchableOpacity
-            style={styles.headerIcon}
-            onPress={() => navigation.navigate('Notification')}
-          >
-            <Text style={styles.headerIconText}>🔔</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerIcon}
-            onPress={() => navigation.navigate('Profile')}
-          >
-            <Text style={styles.headerIconText}>👤</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
+     <Header navigation={navigation} showBack={true} />
       {/* Body */}
       <View style={styles.body}>
 
@@ -76,7 +58,7 @@ const Dashboard = ({ navigation, route }: any) => {
 
           <TouchableOpacity
             style={styles.menuCard}
-            onPress={() => navigation.navigate('tExpense')}
+            onPress={() => navigation.navigate('tExpense', { plateNumber })}
             activeOpacity={0.75}
           >
             <Text style={styles.menuCardText}>TRUCK EXPENSE</Text>
@@ -278,4 +260,9 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     fontSize: 15,
   },
+  headerIconImage: {
+  width: 24,
+  height: 24,
+  tintColor: '#ffffff',
+},
 });

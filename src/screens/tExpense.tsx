@@ -13,6 +13,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
+import Header from '../components/Header';
+
+const cameraIcon = require('../images/camera.png');
 
 const TExpense = ({ navigation, route }: any) => {
   const plateNumber = route?.params?.plateNumber ?? 'UNKNOWN';
@@ -87,19 +90,7 @@ const TExpense = ({ navigation, route }: any) => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={function() { navigation.goBack(); }} style={styles.backBtn}>
-          <Text style={styles.backText}>← back</Text>
-        </TouchableOpacity>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Text style={styles.iconText}>🔔</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Text style={styles.iconText}>👤</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Header navigation={navigation} showBack={true} />
 
       <View style={styles.titleCard}>
         <Text style={styles.plateLabel}>
@@ -163,8 +154,10 @@ const TExpense = ({ navigation, route }: any) => {
         </View>
 
         <View style={styles.uploadSection}>
+
+          {/* Receipt Photo */}
           <TouchableOpacity
-            style={[styles.uploadCard, receiptPhoto && styles.uploadCardDone]}
+            style={[styles.uploadCard, receiptPhoto ? styles.uploadCardDone : null]}
             onPress={function() { handlePickSource('receipt'); }}
             activeOpacity={0.75}
           >
@@ -172,7 +165,7 @@ const TExpense = ({ navigation, route }: any) => {
               <Image source={{ uri: receiptPhoto }} style={styles.uploadPreview} resizeMode="cover" />
             ) : (
               <View style={styles.uploadPlaceholder}>
-                <Text style={styles.uploadIcon}>📷</Text>
+                <Image source={cameraIcon} style={styles.uploadCameraIcon} resizeMode="contain" />
                 <Text style={styles.uploadTitle}>Receipt Photo</Text>
                 <Text style={styles.uploadSub}>Upload Here</Text>
               </View>
@@ -184,8 +177,9 @@ const TExpense = ({ navigation, route }: any) => {
             )}
           </TouchableOpacity>
 
+          {/* Process Photo */}
           <TouchableOpacity
-            style={[styles.uploadCard, processPhoto && styles.uploadCardDone]}
+            style={[styles.uploadCard, processPhoto ? styles.uploadCardDone : null]}
             onPress={function() { handlePickSource('process'); }}
             activeOpacity={0.75}
           >
@@ -193,7 +187,7 @@ const TExpense = ({ navigation, route }: any) => {
               <Image source={{ uri: processPhoto }} style={styles.uploadPreview} resizeMode="cover" />
             ) : (
               <View style={styles.uploadPlaceholder}>
-                <Text style={styles.uploadIcon}>📷</Text>
+                <Image source={cameraIcon} style={styles.uploadCameraIcon} resizeMode="contain" />
                 <Text style={styles.uploadTitle}>Process Photo</Text>
                 <Text style={styles.uploadSub}>Upload Here</Text>
               </View>
@@ -204,6 +198,7 @@ const TExpense = ({ navigation, route }: any) => {
               </View>
             )}
           </TouchableOpacity>
+
         </View>
 
         <Text style={styles.uploadNote}>* Both Receipt and Process photos are required</Text>
@@ -222,19 +217,6 @@ export default TExpense;
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#1a2a6c' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#1a2a6c',
-  },
-  backBtn: { paddingVertical: 4, paddingRight: 12 },
-  backText: { fontSize: 14, color: '#ffffff', fontWeight: '600' },
-  headerRight: { flexDirection: 'row', gap: 10 },
-  iconBtn: { padding: 4 },
-  iconText: { fontSize: 20, color: '#ffffff' },
   titleCard: {
     backgroundColor: '#1a2a6c',
     paddingHorizontal: 20,
@@ -324,7 +306,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 12,
   },
-  uploadIcon: { fontSize: 28, marginBottom: 6 },
+  uploadCameraIcon: {
+    width: 36,
+    height: 36,
+    tintColor: '#1a2a6c',
+    marginBottom: 6,
+  },
   uploadTitle: {
     fontSize: 12,
     fontWeight: '700',

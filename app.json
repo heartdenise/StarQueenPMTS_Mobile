@@ -33,7 +33,8 @@
           "cameraPermission": "Allow StarQueen to access your camera.",
           "photosPermission": "Allow StarQueen to access your photos."
         }
-      ]
+      ],
+      "expo-asset"
     ]
   }
 }

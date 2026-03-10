@@ -6,9 +6,11 @@ import {
   StyleSheet,
   Alert,
   Platform,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTruck } from '../context/TruckContext';
+import Header from '../components/Header';
 
 const TOdometer = ({ navigation, route }: any) => {
   const plateNumber = route?.params?.plateNumber ?? 'UNKNOWN';
@@ -45,20 +47,9 @@ const TOdometer = ({ navigation, route }: any) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={function() { navigation.goBack(); }} style={styles.backBtn}>
-          <Text style={styles.backText}>← back</Text>
-        </TouchableOpacity>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Text style={styles.iconText}>🔔</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Text style={styles.iconText}>👤</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Header navigation={navigation} showBack={true} />
 
       <View style={styles.titleCard}>
         <Text style={styles.plateLabel}>
@@ -115,19 +106,6 @@ export default TOdometer;
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#1a2a6c' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#1a2a6c',
-  },
-  backBtn: { paddingVertical: 4, paddingRight: 12 },
-  backText: { fontSize: 14, color: '#ffffff', fontWeight: '600' },
-  headerRight: { flexDirection: 'row', gap: 10 },
-  iconBtn: { padding: 4 },
-  iconText: { fontSize: 20, color: '#ffffff' },
   titleCard: {
     backgroundColor: '#1a2a6c',
     paddingHorizontal: 20,

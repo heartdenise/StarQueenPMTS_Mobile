@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { TruckProvider } from './src/context/TruckContext';
@@ -8,13 +9,64 @@ import TActivity from './src/screens/tActivity';
 import TMaintenance from './src/screens/tMaintenance';
 import TExpense from './src/screens/tExpense';
 import TOdometer from './src/screens/tOdometer';
+import * as SplashScreen from 'expo-splash-screen';
+import { Asset } from 'expo-asset';
+
+SplashScreen.preventAutoHideAsync();
+
+const localAssets = [
+  require('./src/images/bell.png'),
+  require('./src/images/profile.png'),
+  require('./src/images/camera.png'),
+  require('./src/images/logo.png'),
+  require('./src/images/password/eye_open.png'),
+  require('./src/images/password/eye_closed.png'),
+];
+
+async function loadAssets() {
+  // Load all assets into memory
+  const assetPromises = localAssets.map(function(asset) {
+    return Asset.fromModule(asset).downloadAsync();
+  });
+  await Promise.all(assetPromises);
+
+  // Also prefetch resolved URIs into the image cache
+  const prefetchPromises = localAssets.map(function(asset) {
+    const resolved = Asset.fromModule(asset);
+    if (resolved.uri) {
+      return Image.prefetch(resolved.uri);
+    }
+    return Promise.resolve();
+  });
+  await Promise.all(prefetchPromises);
+}
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  const [appReady, setAppReady] = useState(false);
+
+  useEffect(function() {
+    (async function() {
+      try {
+        await loadAssets();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppReady(true);
+      }
+    })();
+  }, []);
+
+  const onLayoutRootView = useCallback(async function() {
+    if (appReady) await SplashScreen.hideAsync();
+  }, [appReady]);
+
+  if (!appReady) return null;
+
   return (
     <TruckProvider>
-      <NavigationContainer>
+      <NavigationContainer onReady={onLayoutRootView}>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Dashboard" component={Dashboard} />
