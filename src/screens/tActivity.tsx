@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '../components/Header';
 
 const TActivity = ({ navigation, route }: any) => {
   const { plateNumber } = route?.params ?? { plateNumber: 'UNKNOWN' };
@@ -40,21 +41,7 @@ const TActivity = ({ navigation, route }: any) => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={styles.backText}>← back</Text>
-        </TouchableOpacity>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Text style={styles.iconText}>🔔</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Text style={styles.iconText}>👤</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
+     <Header navigation={navigation} showBack={true} />
       {/* Title Card */}
       <View style={styles.titleCard}>
         <Text style={styles.plateLabel}>PLATE NUMBER:{'   '}<Text style={styles.plateValue}>{plateNumber}</Text></Text>

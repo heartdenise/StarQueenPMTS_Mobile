@@ -14,6 +14,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { useTruck } from '../context/TruckContext';
+import Header from '../components/Header';
+
+const cameraIcon = require('../images/camera.png');
 
 const MAINTENANCE_ITEMS = [
   { id: 1, name: 'Engine Oil & Filter Replacement', intervalKm: 5000, lastServiceKm: 13000 },
@@ -78,7 +81,6 @@ const TMaintenance = ({ navigation, route }: any) => {
             quality: 0.8,
             allowsEditing: true,
           });
-
       if (!result.canceled) {
         setProofImage(result.assets[0].uri);
       }
@@ -113,19 +115,7 @@ const TMaintenance = ({ navigation, route }: any) => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={function() { navigation.goBack(); }} style={styles.backBtn}>
-          <Text style={styles.backText}>← back</Text>
-        </TouchableOpacity>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Text style={styles.iconText}>🔔</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Text style={styles.iconText}>👤</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Header navigation={navigation} showBack={true} />
 
       <View style={styles.titleCard}>
         <Text style={styles.plateLabel}>
@@ -218,7 +208,7 @@ const TMaintenance = ({ navigation, route }: any) => {
             </Text>
 
             <TouchableOpacity
-              style={[styles.proofPlaceholder, proofImage && styles.proofPlaceholderDone]}
+              style={[styles.proofPlaceholder, proofImage ? styles.proofPlaceholderDone : null]}
               onPress={handlePickSource}
               activeOpacity={0.75}
             >
@@ -226,7 +216,7 @@ const TMaintenance = ({ navigation, route }: any) => {
                 <Image source={{ uri: proofImage }} style={styles.proofPreview} resizeMode="cover" />
               ) : (
                 <View style={styles.proofInner}>
-                  <Text style={styles.proofPlaceholderIcon}>📷</Text>
+                  <Image source={cameraIcon} style={styles.proofCameraIcon} resizeMode="contain" />
                   <Text style={styles.proofPlaceholderText}>Tap to add photo</Text>
                   <Text style={styles.proofPlaceholderSub}>Camera or Gallery</Text>
                 </View>
@@ -239,7 +229,11 @@ const TMaintenance = ({ navigation, route }: any) => {
             </TouchableOpacity>
 
             <View style={styles.modalBtnRow}>
-              <TouchableOpacity style={styles.modalCancelBtn} onPress={function() { setProofModalVisible(false); }} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={styles.modalCancelBtn}
+                onPress={function() { setProofModalVisible(false); }}
+                activeOpacity={0.8}
+              >
                 <Text style={styles.modalCancelText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalSubmitBtn} onPress={handleProofSubmit} activeOpacity={0.8}>
@@ -258,19 +252,6 @@ export default TMaintenance;
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#1a2a6c' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#1a2a6c',
-  },
-  backBtn: { paddingVertical: 4, paddingRight: 12 },
-  backText: { fontSize: 14, color: '#ffffff', fontWeight: '600' },
-  headerRight: { flexDirection: 'row', gap: 10 },
-  iconBtn: { padding: 4 },
-  iconText: { fontSize: 20, color: '#ffffff' },
   titleCard: {
     backgroundColor: '#1a2a6c',
     paddingHorizontal: 20,
@@ -384,7 +365,12 @@ const styles = StyleSheet.create({
   },
   proofPlaceholderDone: { borderColor: '#2e7d32', borderWidth: 2 },
   proofInner: { alignItems: 'center' },
-  proofPlaceholderIcon: { fontSize: 32, marginBottom: 8 },
+  proofCameraIcon: {
+    width: 40,
+    height: 40,
+    tintColor: '#5a6a8c',
+    marginBottom: 8,
+  },
   proofPlaceholderText: { fontSize: 14, color: '#5a6a8c', fontWeight: '600' },
   proofPlaceholderSub: { fontSize: 11, color: '#8a9abc', marginTop: 2 },
   proofPreview: { width: '100%', height: '100%' },

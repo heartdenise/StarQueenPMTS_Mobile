@@ -12,13 +12,17 @@ import {
   Image,
 } from 'react-native';
 
+const logoImage = require('../images/logo.png');
+const eyeOpenIcon = require('../images/password/eye_open.png');
+const eyeClosedIcon = require('../images/password/eye_closed.png');
+
 export default function LoginScreen({ navigation }: any) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleLogin = () => {
-    navigation.navigate('Dashboard');
+    navigation.navigate('Dashboard', { plateNumber: username });
   };
 
   const handleForgotPassword = () => {
@@ -39,7 +43,7 @@ export default function LoginScreen({ navigation }: any) {
         {/* Logo Section */}
         <View style={styles.logoSection}>
           <Image
-            source={require('../images/logo.png')}
+            source={logoImage}
             style={styles.logoImage}
             resizeMode="contain"
           />
@@ -83,7 +87,11 @@ export default function LoginScreen({ navigation }: any) {
                 onPress={() => setPasswordVisible(!passwordVisible)}
                 style={styles.eyeButton}
               >
-                <Text style={styles.eyeText}>{passwordVisible ? '🙈' : '👁️'}</Text>
+                <Image
+                  source={passwordVisible ? eyeOpenIcon : eyeClosedIcon}
+                  style={styles.eyeIcon}
+                  resizeMode="contain"
+                />
               </TouchableOpacity>
             </View>
 
@@ -206,8 +214,9 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
   },
-  eyeText: {
-    fontSize: 16,
+  eyeIcon: {
+    width: 22,
+    height: 22,
   },
   forgotPasswordContainer: {
     alignSelf: 'flex-end',
