@@ -11,7 +11,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { useTruck } from '../context/TruckContext';
 import Header from '../components/Header';
@@ -19,38 +18,38 @@ import Header from '../components/Header';
 const cameraIcon = require('../images/camera.png');
 
 const MAINTENANCE_ITEMS = [
-  { id: 1, name: 'Engine Oil & Filter Replacement', intervalKm: 5000, lastServiceKm: 13000 },
-  { id: 2, name: 'Fuel Filter Replacement', intervalKm: 10000, lastServiceKm: 10000 },
-  { id: 3, name: 'Brake Fluid Change', intervalKm: 20000, lastServiceKm: 5000 },
-  { id: 4, name: 'Chassis & Suspension Grease Service', intervalKm: 8000, lastServiceKm: 12000 },
-  { id: 5, name: 'Battery and Electrical', intervalKm: 15000, lastServiceKm: 8000 },
-  { id: 6, name: 'Tire Pressure & Condition', intervalKm: 3000, lastServiceKm: 16000 },
+  { id: 1, name: 'Engine Oil & Filter Replacement',       intervalKm: 5000,  lastServiceKm: 13000 },
+  { id: 2, name: 'Fuel Filter Replacement',               intervalKm: 10000, lastServiceKm: 10000 },
+  { id: 3, name: 'Brake Fluid Change',                    intervalKm: 20000, lastServiceKm: 5000  },
+  { id: 4, name: 'Chassis & Suspension Grease Service',   intervalKm: 8000,  lastServiceKm: 12000 },
+  { id: 5, name: 'Battery and Electrical',                intervalKm: 15000, lastServiceKm: 8000  },
+  { id: 6, name: 'Tire Pressure & Condition',             intervalKm: 3000,  lastServiceKm: 16000 },
 ];
 
 function getStatus(kmRemaining: number) {
-  if (kmRemaining <= 0) return 'Overdue';
+  if (kmRemaining <= 0)   return 'Overdue';
   if (kmRemaining <= 500) return 'Warning';
   return 'Good';
 }
 
 function getStatusColors(status: string) {
-  if (status === 'Good') return { bg: '#2e7d32', text: '#ffffff' };
+  if (status === 'Good')    return { bg: '#2e7d32', text: '#ffffff' };
   if (status === 'Warning') return { bg: '#e07b00', text: '#ffffff' };
   return { bg: '#c62828', text: '#ffffff' };
 }
 
 const TMaintenance = ({ navigation, route }: any) => {
   const plateNumber = route?.params?.plateNumber ?? 'UNKNOWN';
-  const truck = useTruck();
-  const currentKm = truck ? truck.currentKm : 0;
+  const truck       = useTruck();
+  const currentKm   = truck ? truck.currentKm : 0;
 
   const [proofModalVisible, setProofModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [proofImage, setProofImage] = useState<string | null>(null);
+  const [selectedItem,      setSelectedItem]      = useState<any>(null);
+  const [proofImage,        setProofImage]        = useState<string | null>(null);
 
   useEffect(function() {
     (async function() {
-      const camera = await ImagePicker.requestCameraPermissionsAsync();
+      const camera  = await ImagePicker.requestCameraPermissionsAsync();
       const gallery = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (camera.status !== 'granted' || gallery.status !== 'granted') {
         Alert.alert('Permission Required', 'Camera and gallery permissions are needed.');
@@ -71,34 +70,20 @@ const TMaintenance = ({ navigation, route }: any) => {
   async function handlePickImage(useCamera: boolean) {
     try {
       const result = useCamera
-        ? await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 0.8,
-            allowsEditing: true,
-          })
-        : await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 0.8,
-            allowsEditing: true,
-          });
-      if (!result.canceled) {
-        setProofImage(result.assets[0].uri);
-      }
+        ? await ImagePicker.launchCameraAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8, allowsEditing: true })
+        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8, allowsEditing: true });
+      if (!result.canceled) setProofImage(result.assets[0].uri);
     } catch (e) {
       Alert.alert('Error', 'Could not open camera or gallery.');
     }
   }
 
   function handlePickSource() {
-    Alert.alert(
-      'Upload Proof Photo',
-      'Choose source',
-      [
-        { text: 'Camera', onPress: function() { handlePickImage(true); } },
-        { text: 'Gallery', onPress: function() { handlePickImage(false); } },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+    Alert.alert('Upload Proof Photo', 'Choose source', [
+      { text: 'Camera',  onPress: function() { handlePickImage(true);  } },
+      { text: 'Gallery', onPress: function() { handlePickImage(false); } },
+      { text: 'Cancel',  style: 'cancel' },
+    ]);
   }
 
   function handleProofSubmit() {
@@ -112,19 +97,28 @@ const TMaintenance = ({ navigation, route }: any) => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
+    <View style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" translucent />
 
-      <Header navigation={navigation} showBack={true} />
+      {/* ── Header — hamburger always visible ── */}
+      <Header navigation={navigation} showBack={false} />
 
+      {/* ── Title Card ── */}
       <View style={styles.titleCard}>
+        {/* ── Back button — below header ── */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={styles.backText}>← back</Text>
+        </TouchableOpacity>
+
         <Text style={styles.plateLabel}>
           PLATE NUMBER:
           <Text style={styles.plateValue}>{'   ' + plateNumber}</Text>
         </Text>
         <Text style={styles.screenTitle}>Truck Maintenance Log</Text>
         <Text style={styles.kmReading}>
-          {currentKm > 0 ? currentKm.toLocaleString() + ' KM  •  Current Reading' : 'No odometer reading yet'}
+          {currentKm > 0
+            ? currentKm.toLocaleString() + ' KM  •  Current Reading'
+            : 'No odometer reading yet'}
         </Text>
       </View>
 
@@ -135,9 +129,10 @@ const TMaintenance = ({ navigation, route }: any) => {
       >
         {currentKm === 0 ? (
           <View style={styles.noKmCard}>
-            <Text style={styles.noKmIcon}>🚛</Text>
             <Text style={styles.noKmText}>No odometer reading found</Text>
-            <Text style={styles.noKmSub}>Please submit your current KM in the Truck Odometer screen first.</Text>
+            <Text style={styles.noKmSub}>
+              Please submit your current KM in the Truck Odometer screen first.
+            </Text>
             <TouchableOpacity
               style={styles.goToOdometerBtn}
               onPress={function() { navigation.navigate('tOdometer', { plateNumber }); }}
@@ -159,9 +154,9 @@ const TMaintenance = ({ navigation, route }: any) => {
 
             {MAINTENANCE_ITEMS.map(function(item, index) {
               const kmRemaining = getKmRemaining(item);
-              const status = getStatus(kmRemaining);
-              const colors = getStatusColors(status);
-              const isOverdue = status === 'Overdue';
+              const status      = getStatus(kmRemaining);
+              const colors      = getStatusColors(status);
+              const isOverdue   = status === 'Overdue';
 
               return (
                 <View key={item.id}>
@@ -173,7 +168,10 @@ const TMaintenance = ({ navigation, route }: any) => {
                       </View>
                       {isOverdue && (
                         <View style={styles.actionBtns}>
-                          <TouchableOpacity style={styles.checkBtn} onPress={function() { handleCheckPress(item); }}>
+                          <TouchableOpacity
+                            style={styles.checkBtn}
+                            onPress={function() { handleCheckPress(item); }}
+                          >
                             <Text style={styles.checkBtnText}>✓</Text>
                           </TouchableOpacity>
                           <TouchableOpacity style={styles.xBtn}>
@@ -192,6 +190,7 @@ const TMaintenance = ({ navigation, route }: any) => {
         <View style={{ height: 40 }} />
       </ScrollView>
 
+      {/* ── Proof Modal ── */}
       <Modal
         visible={proofModalVisible}
         transparent
@@ -244,7 +243,7 @@ const TMaintenance = ({ navigation, route }: any) => {
         </View>
       </Modal>
 
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -252,11 +251,25 @@ export default TMaintenance;
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#1a2a6c' },
+
+  // Back button
+  backBtn: {
+    alignSelf: 'flex-start',
+    paddingVertical: 4,
+    marginBottom: 10,
+  },
+  backText: {
+    fontSize: 14,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+
+  // Title Card
   titleCard: {
     backgroundColor: '#1a2a6c',
     paddingHorizontal: 20,
     paddingBottom: 20,
-    paddingTop: 4,
+    paddingTop: 12,
   },
   plateLabel: {
     fontSize: 10,
@@ -279,8 +292,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   kmReading: { fontSize: 11, color: '#c9a84c', fontWeight: '600', letterSpacing: 0.5 },
+
+  // Scroll
   scrollView: { flex: 1, backgroundColor: '#e8edf5' },
   scrollContent: { paddingHorizontal: 16, paddingTop: 20 },
+
+  // No KM card
   noKmCard: {
     backgroundColor: '#ffffff',
     borderRadius: 14,
@@ -292,7 +309,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  noKmIcon: { fontSize: 48, marginBottom: 12 },
   noKmText: { fontSize: 16, fontWeight: '800', color: '#1a2a6c', marginBottom: 8 },
   noKmSub: { fontSize: 13, color: '#5a6a8c', textAlign: 'center', lineHeight: 20, marginBottom: 20 },
   goToOdometerBtn: {
@@ -302,6 +318,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   goToOdometerText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+
+  // Table
   tableCard: {
     backgroundColor: '#ffffff',
     borderRadius: 14,
@@ -339,6 +357,8 @@ const styles = StyleSheet.create({
   },
   xBtnText: { color: '#ffffff', fontSize: 14, fontWeight: '800' },
   rowDivider: { height: 1, backgroundColor: '#f0f3f8' },
+
+  // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalCard: {
     backgroundColor: '#ffffff',
@@ -352,8 +372,7 @@ const styles = StyleSheet.create({
   modalDivider: { height: 1.5, backgroundColor: '#e0e5f0', marginBottom: 14 },
   modalInstruction: { fontSize: 13, color: '#3a4a6c', marginBottom: 16, lineHeight: 20 },
   proofPlaceholder: {
-    width: '100%',
-    height: 150,
+    width: '100%', height: 150,
     backgroundColor: '#f0f3f8',
     borderRadius: 12,
     alignItems: 'center',
@@ -365,12 +384,7 @@ const styles = StyleSheet.create({
   },
   proofPlaceholderDone: { borderColor: '#2e7d32', borderWidth: 2 },
   proofInner: { alignItems: 'center' },
-  proofCameraIcon: {
-    width: 40,
-    height: 40,
-    tintColor: '#5a6a8c',
-    marginBottom: 8,
-  },
+  proofCameraIcon: { width: 40, height: 40, tintColor: '#5a6a8c', marginBottom: 8 },
   proofPlaceholderText: { fontSize: 14, color: '#5a6a8c', fontWeight: '600' },
   proofPlaceholderSub: { fontSize: 11, color: '#8a9abc', marginTop: 2 },
   proofPreview: { width: '100%', height: '100%' },

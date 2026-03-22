@@ -8,7 +8,6 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTruck } from '../context/TruckContext';
 import Header from '../components/Header';
 
@@ -46,12 +45,19 @@ const TOdometer = ({ navigation, route }: any) => {
   const keys = ['1','2','3','4','5','6','7','8','9','X','0','DEL'];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
+    <View style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" translucent />
 
-      <Header navigation={navigation} showBack={true} />
+      {/* ── Header — hamburger always visible ── */}
+      <Header navigation={navigation} showBack={false} />
 
+      {/* ── Title Card ── */}
       <View style={styles.titleCard}>
+        {/* ── Back button — below header ── */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={styles.backText}>← back</Text>
+        </TouchableOpacity>
+
         <Text style={styles.plateLabel}>
           PLATE NUMBER:
           <Text style={styles.plateValue}>{'   ' + plateNumber}</Text>
@@ -59,6 +65,7 @@ const TOdometer = ({ navigation, route }: any) => {
         <Text style={styles.screenTitle}>Truck Odometer</Text>
       </View>
 
+      {/* ── Body ── */}
       <View style={styles.body}>
         <Text style={styles.instruction}>Enter the Total Kilometer of the Truck</Text>
 
@@ -70,16 +77,16 @@ const TOdometer = ({ navigation, route }: any) => {
 
         <View style={styles.numpad}>
           {keys.map(function(key) {
-            const isX = key === 'X';
+            const isX   = key === 'X';
             const isDel = key === 'DEL';
             return (
               <TouchableOpacity
                 key={key}
                 style={isX || isDel ? styles.keySpecial : styles.key}
                 onPress={function() {
-                  if (isX) { handleClear(); }
-                  else if (isDel) { handleDelete(); }
-                  else { handlePress(key); }
+                  if (isX)       handleClear();
+                  else if (isDel) handleDelete();
+                  else            handlePress(key);
                 }}
                 activeOpacity={0.7}
               >
@@ -92,13 +99,14 @@ const TOdometer = ({ navigation, route }: any) => {
         </View>
       </View>
 
+      {/* ── Footer Submit ── */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} activeOpacity={0.8}>
           <Text style={styles.submitText}>Submit</Text>
         </TouchableOpacity>
       </View>
 
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -106,11 +114,25 @@ export default TOdometer;
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#1a2a6c' },
+
+  // Back button
+  backBtn: {
+    alignSelf: 'flex-start',
+    paddingVertical: 4,
+    marginBottom: 10,
+  },
+  backText: {
+    fontSize: 14,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+
+  // Title Card
   titleCard: {
     backgroundColor: '#1a2a6c',
     paddingHorizontal: 20,
     paddingBottom: 20,
-    paddingTop: 4,
+    paddingTop: 12,
   },
   plateLabel: {
     fontSize: 10,
@@ -131,6 +153,8 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     letterSpacing: 0.5,
   },
+
+  // Body
   body: {
     flex: 1,
     backgroundColor: '#e8edf5',
@@ -213,6 +237,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#5a6a8c',
   },
+
+  // Footer
   footer: {
     backgroundColor: '#e8edf5',
     paddingHorizontal: 24,
