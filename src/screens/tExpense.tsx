@@ -11,7 +11,6 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import Header from '../components/Header';
 
@@ -20,16 +19,16 @@ const cameraIcon = require('../images/camera.png');
 const TExpense = ({ navigation, route }: any) => {
   const plateNumber = route?.params?.plateNumber ?? 'UNKNOWN';
 
-  const [date, setDate] = useState('');
-  const [category, setCategory] = useState('');
-  const [amount, setAmount] = useState('');
-  const [notes, setNotes] = useState('');
+  const [date,         setDate]         = useState('');
+  const [category,     setCategory]     = useState('');
+  const [amount,       setAmount]       = useState('');
+  const [notes,        setNotes]        = useState('');
   const [receiptPhoto, setReceiptPhoto] = useState<string | null>(null);
   const [processPhoto, setProcessPhoto] = useState<string | null>(null);
 
   useEffect(function() {
     (async function() {
-      const camera = await ImagePicker.requestCameraPermissionsAsync();
+      const camera  = await ImagePicker.requestCameraPermissionsAsync();
       const gallery = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (camera.status !== 'granted' || gallery.status !== 'granted') {
         Alert.alert('Permission Required', 'Camera and gallery permissions are needed.');
@@ -65,9 +64,9 @@ const TExpense = ({ navigation, route }: any) => {
       type === 'receipt' ? 'Upload Receipt' : 'Upload Process Photo',
       'Choose source',
       [
-        { text: 'Camera', onPress: function() { handlePickImage(type, true); } },
+        { text: 'Camera',  onPress: function() { handlePickImage(type, true);  } },
         { text: 'Gallery', onPress: function() { handlePickImage(type, false); } },
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Cancel',  style: 'cancel' },
       ]
     );
   }
@@ -87,12 +86,19 @@ const TExpense = ({ navigation, route }: any) => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
+    <View style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" translucent />
 
-      <Header navigation={navigation} showBack={true} />
+      {/* ── Header — hamburger always visible ── */}
+      <Header navigation={navigation} showBack={false} />
 
+      {/* ── Title Card ── */}
       <View style={styles.titleCard}>
+        {/* ── Back button — below header ── */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={styles.backText}>← back</Text>
+        </TouchableOpacity>
+
         <Text style={styles.plateLabel}>
           PLATE NUMBER:
           <Text style={styles.plateValue}>{'   ' + plateNumber}</Text>
@@ -209,7 +215,7 @@ const TExpense = ({ navigation, route }: any) => {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -217,11 +223,25 @@ export default TExpense;
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#1a2a6c' },
+
+  // Back button — inside title card below header
+  backBtn: {
+    alignSelf: 'flex-start',
+    paddingVertical: 4,
+    marginBottom: 10,
+  },
+  backText: {
+    fontSize: 14,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+
+  // Title Card
   titleCard: {
     backgroundColor: '#1a2a6c',
     paddingHorizontal: 20,
     paddingBottom: 20,
-    paddingTop: 4,
+    paddingTop: 12,
   },
   plateLabel: {
     fontSize: 10,
@@ -242,8 +262,12 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     letterSpacing: 0.5,
   },
+
+  // Scroll
   scrollView: { flex: 1, backgroundColor: '#e8edf5' },
   scrollContent: { paddingHorizontal: 16, paddingTop: 20 },
+
+  // Field Cards
   fieldCard: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
@@ -276,6 +300,8 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     textAlignVertical: 'top',
   },
+
+  // Upload
   uploadSection: {
     flexDirection: 'row',
     gap: 12,
@@ -340,6 +366,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginLeft: 4,
   },
+
+  // Submit
   submitBtn: {
     backgroundColor: '#1a2a6c',
     borderRadius: 12,

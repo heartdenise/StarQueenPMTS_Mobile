@@ -5,46 +5,45 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  
   StatusBar,
   ScrollView,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/Header';
 
 const TActivity = ({ navigation, route }: any) => {
   const { plateNumber } = route?.params ?? { plateNumber: 'UNKNOWN' };
 
-  const [date, setDate] = useState('');
-  const [farm, setFarm] = useState('');
-  const [address, setAddress] = useState('');
-  const [callTime, setCallTime] = useState('');
-  const [plant, setPlant] = useState('');
+  const [date,       setDate]       = useState('');
+  const [farm,       setFarm]       = useState('');
+  const [address,    setAddress]    = useState('');
+  const [callTime,   setCallTime]   = useState('');
+  const [plant,      setPlant]      = useState('');
   const [driverName, setDriverName] = useState('');
-  const [departure, setDeparture] = useState('');
-  const [arrival, setArrival] = useState('');
+  const [departure,  setDeparture]  = useState('');
+  const [arrival,    setArrival]    = useState('');
 
-  const handleSubmitDetails = () => {
-    console.log('Details submitted:', { date, farm, address, callTime, plant, driverName });
-  };
-
-  const handleSubmitDeparture = () => {
-    console.log('Departure submitted:', departure);
-  };
-
-  const handleSubmitArrival = () => {
-    console.log('Arrival submitted:', arrival);
-  };
+  const handleSubmitDetails  = () => console.log('Details submitted:', { date, farm, address, callTime, plant, driverName });
+  const handleSubmitDeparture = () => console.log('Departure submitted:', departure);
+  const handleSubmitArrival   = () => console.log('Arrival submitted:', arrival);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
+    <View style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" translucent />
 
-     <Header navigation={navigation} showBack={true} />
-      {/* Title Card */}
+      {/* ── Header — hamburger always visible ── */}
+      <Header navigation={navigation} showBack={false} />
+
+      {/* ── Title Card ── */}
       <View style={styles.titleCard}>
-        <Text style={styles.plateLabel}>PLATE NUMBER:{'   '}<Text style={styles.plateValue}>{plateNumber}</Text></Text>
+        {/* ── Back button — below header ── */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={styles.backText}>← back</Text>
+        </TouchableOpacity>
+        <Text style={styles.plateLabel}>
+          PLATE NUMBER:{'   '}
+          <Text style={styles.plateValue}>{plateNumber}</Text>
+        </Text>
         <Text style={styles.screenTitle}>Truck Activity</Text>
       </View>
 
@@ -58,48 +57,12 @@ const TActivity = ({ navigation, route }: any) => {
 
         {/* Details Form */}
         <View style={styles.formCard}>
-          <TextInput
-            style={styles.input}
-            placeholder="Date"
-            placeholderTextColor="#aab0c0"
-            value={date}
-            onChangeText={setDate}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Farm"
-            placeholderTextColor="#aab0c0"
-            value={farm}
-            onChangeText={setFarm}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Address"
-            placeholderTextColor="#aab0c0"
-            value={address}
-            onChangeText={setAddress}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Call Time  (e.g., 08:30 AM)"
-            placeholderTextColor="#aab0c0"
-            value={callTime}
-            onChangeText={setCallTime}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Plant"
-            placeholderTextColor="#aab0c0"
-            value={plant}
-            onChangeText={setPlant}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Driver's Name"
-            placeholderTextColor="#aab0c0"
-            value={driverName}
-            onChangeText={setDriverName}
-          />
+          <TextInput style={styles.input} placeholder="Date"                   placeholderTextColor="#aab0c0" value={date}       onChangeText={setDate}       />
+          <TextInput style={styles.input} placeholder="Farm"                   placeholderTextColor="#aab0c0" value={farm}       onChangeText={setFarm}       />
+          <TextInput style={styles.input} placeholder="Address"                placeholderTextColor="#aab0c0" value={address}    onChangeText={setAddress}    />
+          <TextInput style={styles.input} placeholder="Call Time (e.g. 08:30 AM)" placeholderTextColor="#aab0c0" value={callTime}  onChangeText={setCallTime}  />
+          <TextInput style={styles.input} placeholder="Plant"                  placeholderTextColor="#aab0c0" value={plant}      onChangeText={setPlant}      />
+          <TextInput style={styles.input} placeholder="Driver's Name"          placeholderTextColor="#aab0c0" value={driverName} onChangeText={setDriverName} />
 
           <TouchableOpacity style={styles.submitBtnRight} onPress={handleSubmitDetails} activeOpacity={0.8}>
             <Text style={styles.submitBtnText}>Submit</Text>
@@ -109,7 +72,6 @@ const TActivity = ({ navigation, route }: any) => {
         {/* Departure & Arrival */}
         <View style={styles.timeRow}>
 
-          {/* Departure */}
           <View style={styles.timeCard}>
             <Text style={styles.timeLabel}>Departure</Text>
             <TextInput
@@ -125,7 +87,6 @@ const TActivity = ({ navigation, route }: any) => {
             </TouchableOpacity>
           </View>
 
-          {/* Arrival */}
           <View style={styles.timeCard}>
             <Text style={styles.timeLabel}>Arrival</Text>
             <TextInput
@@ -145,7 +106,7 @@ const TActivity = ({ navigation, route }: any) => {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -157,35 +118,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a2a6c',
   },
 
-  // Header
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#1a2a6c',
-  },
+  // Back button — inside title card, below header
   backBtn: {
+    alignSelf: 'flex-start',
     paddingVertical: 4,
-    paddingRight: 12,
+    marginBottom: 10,
   },
   backText: {
     fontSize: 14,
     color: '#ffffff',
     fontWeight: '600',
-    letterSpacing: 0.5,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  iconBtn: {
-    padding: 4,
-  },
-  iconText: {
-    fontSize: 20,
-    color: '#ffffff',
   },
 
   // Title Card
@@ -193,9 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a2a6c',
     paddingHorizontal: 20,
     paddingBottom: 20,
-    paddingTop: 4,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
+    paddingTop: 12,
   },
   plateLabel: {
     fontSize: 10,
@@ -228,7 +168,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 22,
   },
-
   sectionLabel: {
     fontSize: 12,
     color: '#5a6a8c',
@@ -259,7 +198,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1a2a6c',
     marginBottom: 10,
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif',
   },
   submitBtnRight: {
     alignSelf: 'flex-end',

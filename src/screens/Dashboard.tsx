@@ -4,35 +4,34 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
-  
-  StatusBar,
   Platform,
+  StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/Header';
+import { useTruck } from '../context/TruckContext';
 
 const Dashboard = ({ navigation, route }: any) => {
-  const { plateNumber } = route?.params ?? { plateNumber: 'UNKNOWN' };
+  const { plateNumber } = route?.params ?? { plateNumber: '' };
 
-  // Set to true when odometer needs updating — connect to backend later
-  const odometorNeedsUpdate = true;
+  const truck = useTruck();
+  const currentKm = truck ? truck.currentKm : 0;
+  const odometorNeedsUpdate = currentKm === 0;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" />
+    <View style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a2a6c" translucent />
 
-     <Header navigation={navigation} showBack={true} />
-      {/* Body */}
+      {/* ── Header — hamburger menu, no back button ── */}
+      <Header navigation={navigation} showBack={false} />
+
+      {/* ── Body ── */}
       <View style={styles.body}>
 
         {/* Truck Plate Card */}
         <View style={styles.plateCard}>
-          {/* Top shine strip */}
           <View style={styles.plateShine} />
           <Text style={styles.plateLabel}>TRUCK PLATE NUMBER</Text>
           <Text style={styles.plateNumber}>{plateNumber}</Text>
-          
         </View>
 
         {/* Menu Cards */}
@@ -40,7 +39,7 @@ const Dashboard = ({ navigation, route }: any) => {
 
           <TouchableOpacity
             style={styles.menuCard}
-           onPress={() => navigation.navigate('tActivity', { plateNumber })}
+            onPress={() => navigation.navigate('tActivity', { plateNumber })}
             activeOpacity={0.75}
           >
             <Text style={styles.menuCardText}>TRUCK ACTIVITY</Text>
@@ -76,7 +75,7 @@ const Dashboard = ({ navigation, route }: any) => {
                 TRUCK ODOMETER
               </Text>
               {odometorNeedsUpdate && (
-                <Text style={styles.warningText}>⚠ Odometer update required</Text>
+                <Text style={styles.warningText}>Odometer update required</Text>
               )}
             </View>
             {odometorNeedsUpdate
@@ -87,7 +86,7 @@ const Dashboard = ({ navigation, route }: any) => {
 
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -97,32 +96,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#1a2a6c',
-  },
-
-  // Header
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#1a2a6c',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerIcon: {
-    padding: 4,
-  },
-  hamburger: {
-    fontSize: 24,
-    color: '#ffffff',
-  },
-  headerIconText: {
-    fontSize: 22,
-    color: '#ffffff',
   },
 
   // Body
@@ -135,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // Plate Card — premium gold
+  // Plate Card
   plateCard: {
     width: '88%',
     backgroundColor: '#c9a84c',
@@ -144,7 +117,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: 'center',
     marginBottom: 32,
-    // Deep layered shadow for premium feel
     shadowColor: '#7a5c00',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.45,
@@ -180,26 +152,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textTransform: 'uppercase',
   },
-  plateUnderline: {
-    width: '70%',
-    height: 1.5,
-    backgroundColor: 'rgba(74,46,0,0.3)',
-    marginTop: 12,
-    marginBottom: 10,
-    borderRadius: 1,
-  },
-  plateStatusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  plateDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: '#2e7d32',
-  },
- 
+
   // Menu Cards
   menuContainer: {
     width: '100%',
@@ -260,9 +213,4 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     fontSize: 15,
   },
-  headerIconImage: {
-  width: 24,
-  height: 24,
-  tintColor: '#ffffff',
-},
 });
