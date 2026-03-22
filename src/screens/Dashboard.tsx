@@ -11,11 +11,13 @@ import Header from '../components/Header';
 import { useTruck } from '../context/TruckContext';
 
 const Dashboard = ({ navigation, route }: any) => {
-  const { plateNumber } = route?.params ?? { plateNumber: '' };
+  
 
   const truck = useTruck();
   const currentKm = truck ? truck.currentKm : 0;
   const odometorNeedsUpdate = currentKm === 0;
+
+  const plateNumber = route?.params?.plateNumber || truck?.plateNumber || '';
 
   return (
     <View style={styles.safeArea}>

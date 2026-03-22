@@ -11,6 +11,7 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
+import { useTruck } from '../context/TruckContext';
 
 const { width, height } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.72;
@@ -30,6 +31,9 @@ const Header = ({ navigation, showBack = false, plateNumber }: any) => {
   const [drawerOpen,  setDrawerOpen]  = useState(false);
   const slideAnim   = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayAnim = useRef(new Animated.Value(0)).current;
+
+  // ✅ Read plateNumber from context as fallback
+  const truck = useTruck();
 
   const openDrawer = () => {
     setDrawerOpen(true);
@@ -63,16 +67,17 @@ const Header = ({ navigation, showBack = false, plateNumber }: any) => {
     ]).start(() => setDrawerOpen(false));
   };
 
+  // ✅ Always pass plateNumber — from prop first, then context fallback
   const navigateTo = (screen: string) => {
     closeDrawer();
-    setTimeout(() => navigation.navigate(screen, plateNumber ? { plateNumber } : undefined), 250);
+    const plate = plateNumber || truck?.plateNumber || '';
+    setTimeout(() => navigation.navigate(screen, { plateNumber: plate }), 250);
   };
 
   return (
     <>
       {/* ── Main Header Bar ── */}
       <View style={styles.header}>
-        {/* Hamburger always visible */}
         <TouchableOpacity style={styles.leftBtn} onPress={openDrawer}>
           <Text style={styles.hamburger}>☰</Text>
         </TouchableOpacity>

@@ -11,17 +11,22 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
+import { useTruck } from '../context/TruckContext';
 
-const logoImage = require('../images/logo.png');
-const eyeOpenIcon = require('../images/password/eye_open.png');
+const logoImage    = require('../images/logo.png');
+const eyeOpenIcon  = require('../images/password/eye_open.png');
 const eyeClosedIcon = require('../images/password/eye_closed.png');
 
 export default function LoginScreen({ navigation }: any) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [username,         setUsername]         = useState('');
+  const [password,         setPassword]         = useState('');
+  const [passwordVisible,  setPasswordVisible]  = useState(false);
+
+  const truck = useTruck();
 
   const handleLogin = () => {
+    // Save plateNumber to context so it persists across all screens
+    truck.setPlateNumber(username);
     navigation.navigate('Dashboard', { plateNumber: username });
   };
 
@@ -95,7 +100,6 @@ export default function LoginScreen({ navigation }: any) {
               </TouchableOpacity>
             </View>
 
-            {/* Forgot Password */}
             <TouchableOpacity
               onPress={handleForgotPassword}
               style={styles.forgotPasswordContainer}
@@ -176,7 +180,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#2a3a7c',
     marginBottom: 6,
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif-medium',
     letterSpacing: 0.3,
   },
   textInput: {
@@ -189,7 +192,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1a2a6c',
     backgroundColor: '#f0f4fb',
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif',
   },
   passwordContainer: {
     width: '100%',
@@ -207,7 +209,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     fontSize: 14,
     color: '#1a2a6c',
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif',
   },
   eyeButton: {
     paddingHorizontal: 12,
@@ -226,7 +227,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#3a4a9c',
     fontStyle: 'italic',
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif',
   },
   loginButton: {
     width: '60%',
@@ -248,7 +248,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     letterSpacing: 1.5,
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif-medium',
     textTransform: 'uppercase',
   },
   footer: {
@@ -260,7 +259,6 @@ const styles = StyleSheet.create({
     color: '#3a4a8c',
     fontWeight: '500',
     letterSpacing: 0.3,
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif',
     textAlign: 'center',
     lineHeight: 18,
   },
